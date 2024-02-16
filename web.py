@@ -2,21 +2,37 @@ import requests
 from bs4 import BeautifulSoup
 
 token = ''
-data = []
-data2 = []
-page = 1
+data_words = []
+data_points = []
+data_points_show = []
+data_show = []
+page = 0
 
 def get_20_reviews():
     global page, token
-    while page < 3:
-        if token == '':
-            get_reviews_data(tkn='')
-        else:
-            get_reviews_data(tkn=token)
+    if token == '':
+        get_reviews_data(tkn='')
         page += 1
-    return data
-def remove_common(a, b):
-    a, b = list(set(a).difference(b)), list(set(b).difference(a))
+    else:
+        if page < 2:
+            get_reviews_data(tkn=token)
+            page += 1
+        else:
+            for i1,d1 in enumerate(data_words):
+                for i2,d2 in enumerate(data_points):
+                    if d1 is not None and d2 is not None:
+                        data_words[i1] = [x for x in d1 if x]
+                        data_points[i2] = [x for x in d2 if x]
+                    
+            for i1,d1 in enumerate(data_words):
+                if d1 is not None and data_points[i1] is not None:
+                    data_show.append(' '.join(list(set(data_words[i1]).difference(set(data_points[i1])))))
+                else:
+                    data_show.append(None)
+            for user_data2 in data_points_show:
+                print(user_data2)   
+    return data_show
+
  
     
 def get_reviews_data(tkn):
@@ -35,34 +51,29 @@ def get_reviews_data(tkn):
     for el in soup.select('.gws-localreviews__google-review'):
         node = el.select_one('.f5axBf > span')
         if node is not None:
-           tempreview = node.get_text(separator=' ').split()
+           tempreview = [x.strip('\xa0\xa0|\xa0\xa0') for x in node.get_text(' ').split()]
         else:
            tempreview = None
-        data.append(tempreview)
+        
+        data_words.append(tempreview)
 
         node2 = el.select_one('.k8MTF')
         if node2 is not None:
-           tempreview2 = node2.get_text(separator=' ').split()
+           tempreview2 = [x.strip('\xa0\xa0|\xa0\xa0') for x in node2.get_text(' ').split()]
+           tempreview3 = node2.get_text().split('\xa0\xa0|\xa0\xa0')
         else:
            tempreview2 = None
-        data2.append(tempreview2)
+           tempreview3 = None
+        data_points.append(tempreview2)
+        data_points_show.append(tempreview3)
 
     
-    #print(data)
-    #print(data2)
-
-    for d1 in data:
-        for d2 in data2:
-            #for ds2 in d2:
-            print(d1, d2)
-            
   
-    for user_data in data:
-        print(user_data)
+    # for user_data1 in data_words:
+    #     print(user_data1)
 
-    for user_data in data2:
-       print(user_data)
     
-    return data
+    
+    return data_words
 
 get_20_reviews()

@@ -31,7 +31,7 @@ def get_reviews_data(tkn):
     for el in soup.select('.gws-localreviews__google-review'):
         node = el.select_one('.f5axBf > span')
         if node is not None:
-            tempreview = node.text
+            tempreview = "___".join(node.text.split('|'))
         else:
             tempreview = None
         data.append(tempreview)

@@ -1,6 +1,6 @@
 import sys
 import configparser
-import web
+import web_c
 
 # Azure Text Analytics
 from azure.core.credentials import AzureKeyCredential
@@ -67,12 +67,12 @@ def callback():
 
 @app.route("/")
 def home():
-    result = web.get_20_reviews()
+    result = web_c.get_20_reviews()
     return render_template('reviews.html', reviews = result)
 
 @app.route("/reviews", methods=['POST'])
 def reviews():
-    result = web.get_20_reviews()
+    result = web_c.get_20_reviews()
     return render_template('reviews.html', reviews = result)
 
 

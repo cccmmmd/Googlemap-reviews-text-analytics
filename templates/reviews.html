@@ -56,7 +56,10 @@
                         <h2>擷取的評論</h2>
                         <ol>
                         {% for item in reviews %}
-                            <li>{{item}}</li>
+                            <li>
+                                <span>{{item.review}}</span>
+                                <p>總分：{{item.total}}</p>
+                            </li>
                         {% endfor %}
                         </ol>
                     </div>

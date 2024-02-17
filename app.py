@@ -69,11 +69,11 @@ def callback():
 def home():
     finalresult = []
     result = web_clinic.get_20_reviews()
-    #for res in result:
-    #    finalresult.append(azure_sentiment(res))
+    for res in result:
+       finalresult.append(azure_sentiment(res))
     
-    return render_template('reviews.html', reviews = result)
-    #return render_template('reviews.html', reviews = finalresult)
+    # return render_template('reviews.html', reviews = result)
+    return render_template('reviews.html', reviews = finalresult)
 
 @app.route("/reviews", methods=['POST'])
 def reviews():
@@ -90,7 +90,7 @@ def message_text(event):
         line_bot_api.reply_message_with_http_info(
             ReplyMessageRequest(
                 reply_token=event.reply_token,
-                messages=[TextMessage(text=sentiment_result)],
+                messages=[TextMessage(text=f"{sentiment_result['review']}【總分：{sentiment_result['total']}】")],
                 # messages=[TextMessage(text=event.message.text)]
             )
         )
@@ -100,7 +100,7 @@ def azure_sentiment(user_input):
         endpoint=config["AzureLanguage"]["END_POINT"], credential=credential
     )
     delimiters = ["，","。"," ", "\n", ",",".","!","...","⋯","！","?","？","~","～",'|']
-    string = user_input
+    string = user_input['review']
     for delimiter in delimiters:
         string = string.replace(delimiter, ' ')
  
@@ -116,22 +116,25 @@ def azure_sentiment(user_input):
     docs = [doc for doc in response if not doc.is_error]
     point = 0
     result = ""
+    result_list = {}
     for idx, doc in enumerate(docs):
         sentiment = ''
         if(docs[idx].sentiment == 'positive'):
-            sentiment = '\U0001F60A \U00002796 \U000020E3'
+            sentiment = '\U0001F60A + 1'
             point += 1
         elif(docs[idx].sentiment == 'negative'):
-            sentiment = '\U0001F620 \U00002795 \U000020E3'
+            sentiment = '\U0001F620 - 1'
             point -= 1
         else:
             sentiment = '\U0001F636'
         result += (
             f"{docs[idx].sentences[0].text}({sentiment})\n"
-        )   
-    result += '總分：'+str(point)
+        )  
+    result_list['review'] = result
+    result_list['total'] = point
+    # result += '總分：'+str(point)
 
-    return result
+    return result_list
 
 if __name__ == "__main__":
     app.run()

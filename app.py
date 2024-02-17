@@ -67,8 +67,12 @@ def callback():
 
 @app.route("/")
 def home():
+    finalresult = []
     result = web_c.get_20_reviews()
-    return render_template('reviews.html', reviews = result)
+    for res in result:
+        finalresult.append(azure_sentiment(res))
+    
+    return render_template('reviews.html', reviews = finalresult)
 
 @app.route("/reviews", methods=['POST'])
 def reviews():
@@ -94,34 +98,37 @@ def azure_sentiment(user_input):
     text_analytics_client = TextAnalyticsClient(
         endpoint=config["AzureLanguage"]["END_POINT"], credential=credential
     )
-    delimiters = ["，","。"," ", "\n", ",",".","!","...","！","?","？","~","～",'|']
+    delimiters = ["，","。"," ", "\n", ",",".","!","...","⋯","！","?","？","~","～",'|']
     string = user_input
     for delimiter in delimiters:
         string = string.replace(delimiter, ' ')
  
-    #result = string.split()
     documents = string.split()
+    #print(documents[:10])
     
     response = text_analytics_client.analyze_sentiment(
-        documents, show_opinion_mining=True, language="zh-hant"
+        documents[:10], show_opinion_mining=True, language="zh-hant"
     )
-    print(response)
+    # print(response)
 
 
     docs = [doc for doc in response if not doc.is_error]
+    point = 0
     result = ""
     for idx, doc in enumerate(docs):
         sentiment = ''
         if(docs[idx].sentiment == 'positive'):
-            sentiment = '\U0001F60A'
+            sentiment = '\U0001F60A +1'
+            point += 1
         elif(docs[idx].sentiment == 'negative'):
-            sentiment = '\U00002639'
+            sentiment = '\U00002639 -1'
+            point -= 1
         else:
             sentiment = '\U0001F636'
         result += (
             f"{docs[idx].sentences[0].text}({sentiment})\n"
         )   
-
+    result += '總分：'+str(point)
 
     return result
 

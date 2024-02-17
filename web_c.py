@@ -37,16 +37,12 @@ def get_reviews_data(tkn):
 
 
     for el in soup.select('.gws-localreviews__google-review'):
-        node = el.select_one('.Jtu6Td')
+        node = el.find("span", {"jscontroller":"MZnM8e"})
+        # node = el.select_one('.Jtu6Td > span')
         if node.text != '':
             tempreview = node.text
             data_words.append(tempreview)
 
-  
-    # for user_data in data_words:
-    #     print(user_data)
-
-    
-    return data_words
+    #return data_words
 
 get_20_reviews()

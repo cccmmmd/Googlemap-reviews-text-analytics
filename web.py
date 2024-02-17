@@ -2,11 +2,22 @@ import requests
 from bs4 import BeautifulSoup
 
 token = ''
+#id = '0x3442a81d50996479:0x31ad89de8bca0652'
+id = '0x3442abc9159d64e9:0xc7a5f9f2ed41b74a'
 data_words = []
 data_points = []
 data_points_show = []
 data_show = []
 page = 0
+
+def webdisplay():
+    for i1,d1 in enumerate(data_words):
+        if d1 is not None and data_points[i1] is not None:
+            data_show.append(' '.join(list(set(data_words[i1]).difference(set(data_points[i1])))))
+        else:
+            data_show.append(None)
+    for user_data2 in data_points_show:
+        print(user_data2)   
 
 def get_20_reviews():
     global page, token
@@ -23,25 +34,20 @@ def get_20_reviews():
                     if d1 is not None and d2 is not None:
                         data_words[i1] = [x for x in d1 if x]
                         data_points[i2] = [x for x in d2 if x]
-                    
-            for i1,d1 in enumerate(data_words):
-                if d1 is not None and data_points[i1] is not None:
-                    data_show.append(' '.join(list(set(data_words[i1]).difference(set(data_points[i1])))))
-                else:
-                    data_show.append(None)
-            for user_data2 in data_points_show:
-                print(user_data2)   
+    
+      
+            
     return data_show
 
  
     
 def get_reviews_data(tkn):
-    global token
+    global token, id
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.54 Safari/537.36"
     }
 
-    response = requests.get(f"https://www.google.com/async/reviewDialog?hl=zh-TW&async=feature_id:0x3442abc9159d64e9:0xc7a5f9f2ed41b74a,next_page_token:{tkn},sort_by:newestFirst,start_index:,associated_topic:,_fmt:pc", headers=headers)
+    response = requests.get(f"https://www.google.com/async/reviewDialog?hl=zh-TW&async=feature_id:{id},next_page_token:{tkn},sort_by:newestFirst,start_index:,associated_topic:,_fmt:pc", headers=headers)
 
     soup = BeautifulSoup(response.content, 'html.parser')
     
@@ -73,7 +79,7 @@ def get_reviews_data(tkn):
     #     print(user_data1)
 
     
-    
-    return data_words
+    webdisplay() 
+    # return data_words
 
 get_20_reviews()

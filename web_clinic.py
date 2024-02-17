@@ -17,7 +17,7 @@ def get_20_reviews():
             get_reviews_data(tkn=token)
             page += 1
     
-      
+    print(data_words)   
             
     return data_words
 
@@ -41,7 +41,8 @@ def get_reviews_data(tkn):
         # node = el.select_one('.Jtu6Td > span')
         if node.text != '':
             tempreview = node.text
-            data_words.append(tempreview)
+            # data_words.append(tempreview)
+            data_words.append({'review': tempreview})
 
     #return data_words
 

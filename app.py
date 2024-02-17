@@ -1,6 +1,6 @@
 import sys
 import configparser
-import web_c
+import web_clinic
 
 # Azure Text Analytics
 from azure.core.credentials import AzureKeyCredential
@@ -68,15 +68,16 @@ def callback():
 @app.route("/")
 def home():
     finalresult = []
-    result = web_c.get_20_reviews()
-    for res in result:
-        finalresult.append(azure_sentiment(res))
+    result = web_clinic.get_20_reviews()
+    #for res in result:
+    #    finalresult.append(azure_sentiment(res))
     
-    return render_template('reviews.html', reviews = finalresult)
+    return render_template('reviews.html', reviews = result)
+    #return render_template('reviews.html', reviews = finalresult)
 
 @app.route("/reviews", methods=['POST'])
 def reviews():
-    result = web_c.get_20_reviews()
+    result = web_clinic.get_20_reviews()
     return render_template('reviews.html', reviews = result)
 
 
@@ -118,10 +119,10 @@ def azure_sentiment(user_input):
     for idx, doc in enumerate(docs):
         sentiment = ''
         if(docs[idx].sentiment == 'positive'):
-            sentiment = '\U0001F60A +1'
+            sentiment = '\U0001F60A \U00002796 \U000020E3'
             point += 1
         elif(docs[idx].sentiment == 'negative'):
-            sentiment = '\U00002639 -1'
+            sentiment = '\U0001F620 \U00002795 \U000020E3'
             point -= 1
         else:
             sentiment = '\U0001F636'

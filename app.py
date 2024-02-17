@@ -70,10 +70,10 @@ def home():
     result = web.get_20_reviews()
     return render_template('reviews.html', reviews = result)
 
-# @app.route("/reviews", methods=['POST'])
-# def reviews():
-#     result = web.get_20_reviews()
-#     return render_template('reviews.html', reviews = result)
+@app.route("/reviews", methods=['POST'])
+def reviews():
+    result = web.get_20_reviews()
+    return render_template('reviews.html', reviews = result)
 
 
 @handler.add(MessageEvent, message=TextMessageContent)

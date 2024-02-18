@@ -2,13 +2,15 @@ import requests
 from bs4 import BeautifulSoup
 
 token = ''
-id = '0x3442a83fd0338d9d:0x8eaca58f28b364f6'
+# id = '0x3442a83fd0338d9d:0x8eaca58f28b364f6'
+cid = ''
 data_words = []
 page = 0
 
 
-def get_20_reviews():
-    global page, token
+def get_20_reviews(id):
+    global page, token, cid
+    cid = id
     if token == '':
         get_reviews_data(tkn='')
         page += 1
@@ -17,19 +19,19 @@ def get_20_reviews():
             get_reviews_data(tkn=token)
             page += 1
     
-    print(data_words)   
+    # print(data_words)   
             
     return data_words
 
  
     
 def get_reviews_data(tkn):
-    global token, id
+    global token, cid
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.54 Safari/537.36"
     }
 
-    response = requests.get(f"https://www.google.com/async/reviewDialog?hl=zh-TW&async=feature_id:{id},next_page_token:{tkn},sort_by:newestFirst,start_index:,associated_topic:,_fmt:pc", headers=headers)
+    response = requests.get(f"https://www.google.com/async/reviewDialog?hl=zh-TW&async=feature_id:{cid},next_page_token:{tkn},sort_by:newestFirst,start_index:,associated_topic:,_fmt:pc", headers=headers)
 
     soup = BeautifulSoup(response.content, 'html.parser')
     
@@ -46,4 +48,4 @@ def get_reviews_data(tkn):
 
     #return data_words
 
-get_20_reviews()
+# get_20_reviews(url)

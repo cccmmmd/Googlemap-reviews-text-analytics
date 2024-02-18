@@ -67,24 +67,30 @@ def callback():
 
 @app.route("/")
 def home():
-    finalresult = []
-    result = web_clinic.get_20_reviews()
-    # for res in result:
-    #    finalresult.append(azure_sentiment(res))
-    
-    return render_template('reviews.html', reviews = result)
-    # return render_template('reviews.html', reviews = finalresult)
+    return render_template('home.html')
 
-@app.route("/reviews", methods=['POST'])
-def reviews():
-    result = web_clinic.get_20_reviews()
-    return render_template('reviews.html', reviews = result)
+@app.route("/submit", methods=['POST'])
+def submit():
+    totalpoint = 0
+    if request.method == 'POST':
+        id = request.form['url'].split('!1s')[1].split('!8m2!')[0]
+     # for res in result:
+    #    finalresult.append(azure_sentiment(res, 'web'))
+
+
+    finalresult = web_clinic.get_20_reviews(id)
+
+    # for res in finalresult:
+    #     totalpoint += res['total'] 
+    return render_template('reviews_test.html', reviews = finalresult)
+
+    # return render_template('reviews_test.html', reviews = finalresult, total = totalpoint)
 
 
 @handler.add(MessageEvent, message=TextMessageContent)
 def message_text(event):
     
-    sentiment_result = azure_sentiment(event.message.text)
+    sentiment_result = azure_sentiment(event.message.text, 'line')
     with ApiClient(configuration) as api_client:
         line_bot_api = MessagingApi(api_client)
         line_bot_api.reply_message_with_http_info(
@@ -95,12 +101,15 @@ def message_text(event):
             )
         )
 
-def azure_sentiment(user_input):
+def azure_sentiment(user_input, type):
     text_analytics_client = TextAnalyticsClient(
         endpoint=config["AzureLanguage"]["END_POINT"], credential=credential
     )
     delimiters = ["，","。"," ", "\n", ",",".","!","...","⋯","！","?","？","~","～",'|']
-    string = user_input['review']
+    if type == 'line':
+        string = user_input
+    else:
+        string = user_input['review']
     for delimiter in delimiters:
         string = string.replace(delimiter, ' ')
  
@@ -120,13 +129,13 @@ def azure_sentiment(user_input):
     for idx, doc in enumerate(docs):
         sentiment = ''
         if(docs[idx].sentiment == 'positive'):
-            sentiment = '\U0001F60A + 1'
+            sentiment = '\U0001F60A , + 1'
             point += 1
         elif(docs[idx].sentiment == 'negative'):
-            sentiment = '\U0001F620 - 1'
+            sentiment = '\U0001F620 , - 1'
             point -= 1
         else:
-            sentiment = '\U0001F636'
+            sentiment = '\U0001F636 , + 0'
         result += (
             f"{docs[idx].sentences[0].text}({sentiment})\n"
         )  

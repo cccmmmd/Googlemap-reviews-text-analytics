@@ -69,11 +69,11 @@ def callback():
 def home():
     finalresult = []
     result = web_clinic.get_20_reviews()
-    for res in result:
-       finalresult.append(azure_sentiment(res))
+    # for res in result:
+    #    finalresult.append(azure_sentiment(res))
     
-    # return render_template('reviews.html', reviews = result)
-    return render_template('reviews.html', reviews = finalresult)
+    return render_template('reviews.html', reviews = result)
+    # return render_template('reviews.html', reviews = finalresult)
 
 @app.route("/reviews", methods=['POST'])
 def reviews():

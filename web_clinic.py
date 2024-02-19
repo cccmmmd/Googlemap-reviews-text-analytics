@@ -7,17 +7,26 @@ cid = ''
 data_words = []
 page = 0
 
+def reset():
+    global page, cid, data_words
+    cid = ''
+    data_words = []
+    page = 0
 
 def get_20_reviews(id):
-    global page, token, cid
+    global page, token, cid, data_words
     cid = id
+   
     if token == '':
-        get_reviews_data(tkn='')
-        page += 1
+        if page < 1:
+            get_reviews_data(tkn='')
+            page += 1
+            get_20_reviews(id)
     else:
         if page < 2:
             get_reviews_data(tkn=token)
             page += 1
+            get_20_reviews(id)
     
     # print(data_words)   
             
@@ -48,4 +57,3 @@ def get_reviews_data(tkn):
 
     #return data_words
 
-# get_20_reviews(url)

@@ -37,15 +37,16 @@
             <div class="container">
                 <div class="row">
                     <div class="col-lg-12 mx-auto mb-5 mb-lg-0 mb-lg-3">
-                        <h2>整體評論：
-                            {% if total > 0 %}
+                        <h3>正面數： {{positive}}, 負面數： {{negative}}, 中立數： {{neutral}}</h3>
+                        <h3>整體評論：
+                            {% if positive > negative %}
                                 正面
-                            {% elif total == 0 %}
-                                中立
-                            {% else  %}
+                            {% elif positive < negative %}
                                 負面
+                            {% else  %}
+                               中立
                             {% endif %}
-                        </h2>
+                        </h3>
                         <h2>擷取的評論</h2>
                         {% for item in reviews %}
                             {% if item.total >= 3 %}

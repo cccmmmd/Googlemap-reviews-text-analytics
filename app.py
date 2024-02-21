@@ -80,24 +80,26 @@ def submit():
         "negative": 0,
         "neutral" :0
     }
+    web_clinic.reset()
     finalresult =  []
     if request.method == 'POST':
         id = request.form['url'].split('!1s')[1].split('!8m2!')[0]
-    # print(id)
-   
-    web_clinic.reset()
 
     result = web_clinic.get_20_reviews(id)
     name = web_clinic.fetch_name()
 
-    # azure_sentiment(result[14], 'web')
+
+    # a = azure_sentiment(result[1], 'web')
+    # a['time'] = result[1]['time']        
+    # finalresult.append(a)
 
     for res in result:
-        finalresult.append(azure_sentiment(res, 'web'))
-    print(finalresult)
-    
-
-    # for res in result:
+        a = azure_sentiment(res, 'web')
+        a['time'] = res['time']        
+        finalresult.append(a)
+        
+    # print(finalresult)
+  
 
     for res in finalresult:
         if res['total'] > 0:
@@ -120,11 +122,11 @@ def message_text(event):
     returnMessages.append(TextMessage(
                     text=f"{sentiment_result['review']}【總分：{sentiment_result['total']}】"))
     if sentiment_result['total'] > 0:
-        returnMessages.append(TextMessage(text="是開心評論喔！\U00002764"))
+        returnMessages.append(TextMessage(text="謝謝你的肯定！我們繼續努力 \U00002764"))
     elif sentiment_result['total'] < 0:
-        returnMessages.append(TextMessage(text="是不爽的評論喔！ \U0001F525"))
+        returnMessages.append(TextMessage(text="抱歉讓你有不愉快的觀感，我們深入了解檢討 \U0001F64F"))
     else:
-        returnMessages.append(TextMessage(text="是中立的評論！ \U0001F375"))
+        returnMessages.append(TextMessage(text="謝謝你給予評論！我們收到了！ \U0001F609"))
     with ApiClient(configuration) as api_client:
         line_bot_api = MessagingApi(api_client)
         line_bot_api.reply_message_with_http_info(

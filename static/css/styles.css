@@ -10471,7 +10471,7 @@ header.masthead {
   position: relative;
   background-color: #343a40;
   background: url("https://i2.wp.com/suku3c.com/wp-content/uploads/2020/07/Google-map.jpg") center center;
-  padding-top: 8rem;
+  padding-top: 4rem;
   padding-bottom: 8rem;
   display: flex;
   justify-content: center;
@@ -10544,4 +10544,23 @@ header.masthead h1, header.masthead .h1 {
 footer.footer {
   padding-top: 4rem;
   padding-bottom: 4rem;
+}
+
+.mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  color: #fff;
+  background: center / auto no-repeat url("https://i.gifer.com/77TJ.gif"),
+  rgba(0,0,0,0.8);
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.mask .text{
+  display: none;
+  background-color: #000;
 }

@@ -18,13 +18,15 @@
                 <div class="row justify-content-center">
                     <div class="col-xl-10">
                         <div class="text-center text-white">
-                            <h1 class="mb-5">Google map 診所評論分析</h1>
+                            <h1 class="mb-2">您的診所近期表現如何？</h1>
+                            <p class="mb-5 fs-3">Google map 診所評論分析</p>
+                            <!-- <form class="form-subscribe" action="/submit" method="post" enctype="multipart/form-data"> -->
                             <form class="form-subscribe" action="/submit" method="post" enctype="multipart/form-data">
                                 <div class="row">
                                     <div class="col">
                                         <input class="form-control form-control-lg" type="url" placeholder="請輸入診所網址" name="url" />
                                     </div>
-                                    <div class="col-auto"><button class="btn btn-primary btn-lg" id="submitButton" type="submit">送出</button></div>
+                                    <div class="col-auto"><button class="btn btn-primary btn-lg disabled" id="submitButton" type="submit" onclick="searchFun()">送出</button></div>
                                 </div>
                             </form>
                         </div>
@@ -32,6 +34,10 @@
                 </div>
             </div>
         </header>
-       
+        <div class="mask fs-2">
+            <div class="text show1">系統很努力在抓取資料中....</div>
+            <div class="text show2">系統很努力分析評論中，請稍等一下 > <...</div>
+        </div>
+        <script src="{{url_for('static',filename='js/script.js')}}"></script>
     </body>
 </html>

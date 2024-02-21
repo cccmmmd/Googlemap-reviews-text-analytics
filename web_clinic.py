@@ -9,7 +9,7 @@ page = 0
 name = ''
 
 def reset():
-    global page, cid, data_words
+    global page, cid, data_words,name
     cid = ''
     data_words = []
     page = 0

@@ -1,6 +1,7 @@
 import sys
 import configparser
 import web_clinic
+import json
 
 # Azure Text Analytics
 from azure.core.credentials import AzureKeyCredential
@@ -97,21 +98,50 @@ def submit():
         a = azure_sentiment(res, 'web')
         a['time'] = res['time']        
         finalresult.append(a)
-        
+    
     # print(finalresult)
   
-
+    unique_time = []
+    classify = []
     for res in finalresult:
+        if res['time'] not in unique_time:
+            unique_time.append(res['time'])
+            new = {
+                'time': res['time'],
+                'good': 0,
+                'bad': 0,
+                'neutral': 0
+                }
+            if res['total'] > 0:
+                new['good']+= 1
+            elif res['total'] < 0:
+                new['bad'] += 1
+            else:
+                new['neutral'] += 1
+            classify.append(new)
+        else:
+            temp = [sub for sub in classify if sub['time'] == res['time'] ]
+            
+            if res['total'] > 0:
+                temp[0]['good']+= 1
+            elif res['total'] < 0:
+                temp[0]['bad'] += 1
+            else:
+                temp[0]['neutral'] += 1
+            
         if res['total'] > 0:
             review['positive'] += 1
         elif res['total'] < 0:
             review['negative'] += 1
         else:
             review['neutral'] += 1
-    
+            
+    classify = json.dumps(classify)
+    print(classify)
+
     # return render_template('reviews_test.html', reviews = result, name = name)
 
-    return render_template('reviews.html', finalresult = finalresult, review = review, name = name)
+    return render_template('reviews.html', finalresult = finalresult, review = review, name = name, classify = classify)
 
 
 @handler.add(MessageEvent, message=TextMessageContent)

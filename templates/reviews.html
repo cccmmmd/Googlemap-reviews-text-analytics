@@ -38,7 +38,7 @@
                 <div class="row">
                     <div class="col-lg-12 mx-auto mb-5 mb-lg-0 mb-lg-3">
                         <h1 style="color: rgb(70, 68, 117)">{{name}} </h1>
-                        <p class="fs-5 mb-4">以下就 Google map 記錄的最新 20 筆評論中，【有留文字 】的評論進行語意分析</p>
+                        <p class="fs-5 mb-4">以下就 Google map 上最新 20 筆評論中，【有留文字】的評論進行語意分析</p>
                         <h3>整體評論：
                             {% if review.positive > review.negative %}
                                <span style="color: #3fdb3a;">正面</span> 
@@ -49,8 +49,11 @@
                             {% endif %}
                         </h3>
                         <p class="fs-5">正面數： {{review.positive}} , 負面數： {{review.negative}} , 中立數： {{review.neutral}}</p>
-                        <div id="3dchart" class="my-4" style="width: 700px; height: 400px;"></div> 
-                        <h2>擷取的評論</h2>
+                        <div class="mb-5" style="overflow: auto; background-color: white;">
+                            <div id="3dchart" class="my-4" style="width: 49%; height: 400px; float: left"></div>
+                            <div id="columnchart_material" class="my-4" style="width: 49%; height: 400px; float: right"></div> 
+                        </div>
+                        <h2>詳細評論</h2>
                         {% for item in finalresult %}
                             {% if item.total >= 3 %}
                             <div class="card my-4" style="background-color: rgba(9, 193, 34, 0.479);">
@@ -82,6 +85,7 @@
                 </div>
             </div>
         </section>
+        <div id="exchangeData" style="display: none;">{{classify}}</div>
         <div class="mask fs-2">
             <div class="text show1">系統很努力在抓取資料中....</div>
             <div class="text show2">系統很努力分析評論中，請稍等一下 > <...</div>
@@ -110,6 +114,34 @@
 
             var chart = new google.visualization.PieChart(document.getElementById('3dchart'));
             chart.draw(data, options);
+        }
+
+        google.charts.load('current', {'packages':['bar']});
+        google.charts.setOnLoadCallback(drawChart2);
+        let exchangeData = JSON.parse(document.getElementById('exchangeData').innerHTML);
+
+        function drawChart2() {
+        
+        let bar_data = [['評論時間', '好評', '負評', '中立']]
+        
+        exchangeData.forEach(el => {
+            bar_data.push(Object.values(el))
+        });     
+
+        console.log(bar_data)
+
+
+        var data = google.visualization.arrayToDataTable(bar_data);
+
+        var options = {
+            chart: {
+            title: '各發佈時間區間的評論數量',
+            },
+            colors: ['#9DDF9B', '#FDB3B2', '#F7DE8F']
+        };
+
+        var chart = new google.charts.Bar(document.getElementById('columnchart_material'));
+        chart.draw(data, google.charts.Bar.convertOptions(options));
         }
         </script>
     </body>

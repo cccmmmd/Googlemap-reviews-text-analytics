@@ -9,11 +9,12 @@ page = 0
 name = ''
 
 def reset():
-    global page, cid, data_words,name
+    global page, cid, data_words,name,token
     cid = ''
     data_words = []
     page = 0
     name = ''
+    token = ''
 
 def get_20_reviews(id):
     global page, token, cid, data_words

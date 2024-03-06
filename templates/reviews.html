@@ -130,14 +130,18 @@
 
         console.log(bar_data)
 
-
         var data = google.visualization.arrayToDataTable(bar_data);
 
         var options = {
             chart: {
             title: '各發佈時間區間的評論數量',
             },
-            colors: ['#9DDF9B', '#FDB3B2', '#F7DE8F']
+            isStacked: true,
+            series: {
+                0:{color:'#9DDF9B'},
+                1:{color:'#FDB3B2'},
+                2:{color:'#F7DE8F'}
+            }
         };
 
         var chart = new google.charts.Bar(document.getElementById('columnchart_material'));

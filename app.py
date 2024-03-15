@@ -81,6 +81,9 @@ def submit():
         "negative": 0,
         "neutral" :0
     }
+    good_keywords = {}
+    bad_keywords = {}
+    neutral_keywords={}
     web_clinic.reset()
     finalresult =  []
     if request.method == 'POST':
@@ -133,10 +136,25 @@ def submit():
             
         if res['total'] > 0:
             review['positive'] += 1
+            for i in res['key_phrases']:
+                if i not in good_keywords:
+                    good_keywords[i] = 1
+                else:
+                    good_keywords[i] += 1
         elif res['total'] < 0:
             review['negative'] += 1
+            for i in res['key_phrases']:
+                if i not in bad_keywords:
+                    bad_keywords[i] = 1
+                else:
+                    bad_keywords[i] += 1
         else:
             review['neutral'] += 1
+            for i in res['key_phrases']:
+                if i not in neutral_keywords:
+                    neutral_keywords[i] = 1
+                else:
+                    neutral_keywords[i] += 1
 
         for i in res['key_phrases']:
             if i not in keywords:
@@ -144,7 +162,8 @@ def submit():
             else:
                 keywords[i] += 1
         # keywords = {i:res['key_phrases'].count(i) for i in res['key_phrases']}
-    print(keywords)
+        keywords2 = sorted(keywords.items(), key=lambda x:x[1])
+    print(good_keywords, bad_keywords, neutral_keywords)
 
 
     classify = json.dumps(classify)

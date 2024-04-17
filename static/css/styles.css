@@ -10304,3 +10304,8 @@ footer.footer {
   display: none;
   background-color: #000;
 }
+@media (min-width: 768px) {
+  .showcase .showcase-text {
+    padding: 7rem;
+  }
+}

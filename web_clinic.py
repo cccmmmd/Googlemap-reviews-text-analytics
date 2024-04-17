@@ -4,42 +4,44 @@ from bs4 import BeautifulSoup
 token = ''
 # id = '0x3442a83fd0338d9d:0x8eaca58f28b364f6'
 cid = ''
-data_words = []
+data_words1 = []
+data_words2 = []
 page = 0
 name = ''
 
 def reset():
-    global page, cid, data_words,name,token
+    global page, cid, data_words1, data_words2, name, token
     cid = ''
-    data_words = []
+    data_words1 = []
+    data_words2 = []
     page = 0
     name = ''
     token = ''
 
 def get_20_reviews(id):
-    global page, token, cid, data_words
+    global page, token, cid, data_words1, data_words2
     cid = id
    
     if token == '':
         if page < 1:
-            get_reviews_data(tkn='')
+            get_reviews_data(data_words1, tkn='')
             page += 1
             get_20_reviews(id)
     else:
         if page < 2:
-            get_reviews_data(tkn=token)
+            get_reviews_data(data_words2, tkn=token)
             page += 1
             get_20_reviews(id)
     
     # print(data_words)   
             
-    return data_words
+    return data_words1, data_words2
 
 def fetch_name():
     return name
  
     
-def get_reviews_data(tkn):
+def get_reviews_data(data_array, tkn):
     global token, cid, name
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.54 Safari/537.36"
@@ -48,6 +50,7 @@ def get_reviews_data(tkn):
     response = requests.get(f"https://www.google.com/async/reviewDialog?hl=zh-TW&async=feature_id:{cid},next_page_token:{tkn},sort_by:newestFirst,start_index:,associated_topic:,_fmt:pc", headers=headers)
 
     soup = BeautifulSoup(response.content, 'html.parser')
+    soup.encoding = 'utf-8'
     token = soup.select_one('.gws-localreviews__general-reviews-block')['data-next-page-token']
     name = soup.select_one('.Lhccdd > div:first-of-type ').text
 
@@ -62,7 +65,7 @@ def get_reviews_data(tkn):
                 tempreview = node.text
             else:
                 tempreview = preview.text
-            data_words.append({
+            data_array.append({
                 'review': tempreview,
                 'time': el.select_one('.dehysf').text.strip(),
                 })

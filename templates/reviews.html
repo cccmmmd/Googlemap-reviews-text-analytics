@@ -51,8 +51,21 @@
                         <p class="fs-5">正面數： {{review.positive}} , 負面數： {{review.negative}} , 中立數： {{review.neutral}}</p>
                         <div class="mb-5" style="overflow: auto; background-color: white;">
                             <div id="3dchart" class="my-4" style="width: 49%; height: 400px; float: left"></div>
-                            <div id="columnchart_material" class="my-4" style="width: 49%; height: 400px; float: right"></div> 
+                            <div id="columnchart_material" class="my-4" style="width: 49%; height: 400px; float: right"></div>
+                            <div style="width: 30%; margin: 30px 20px; display: inline-block;">
+                                <h5>正面評價中提及的字詞：</h5><br/>
+                                <canvas id="gk_canvas" style="width: 100%; height: 100%;"></canvas>
+                            </div>
+                            <div style="width: 30%; margin: 30px 15px; display: inline-block;">
+                                <h5>負面評價中提及的字詞：</h5><br/>
+                                <canvas id="bk_canvas" style="width: 100%; height: 100%;"></canvas> 
+                            </div>
+                            <div style="width: 30%; margin: 30px 15px; display: inline-block;">
+                                <h5>中性評價中提及的字詞：</h5><br/>
+                                <canvas id="nk_canvas" style="width: 100%; height: 100%;"></canvas> 
+                            </div>
                         </div>
+                        
                         <h2>詳細評論</h2>
                         {% for item in finalresult %}
                             {% if item.total >= 3 %}
@@ -85,64 +98,97 @@
                 </div>
             </div>
         </section>
-        <div id="exchangeData" style="display: none;">{{classify}}</div>
+        <div id="cf" style="display: none;">{{classify}}</div>
+        <div id="gk" style="display: none;">{{good_keywords}}</div>
+        <div id="bk" style="display: none;">{{bad_keywords}}</div>
+        <div id="nk" style="display: none;">{{neutral_keywords}}</div>
         <div class="mask fs-2">
             <div class="text show1">系統很努力在抓取資料中....</div>
             <div class="text show2">系統很努力分析評論中，請稍等一下 > <...</div>
         </div>
         <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+        <script src="{{url_for('static',filename='js/wordcloud2.js')}}"></script>
         <script src="{{url_for('static',filename='js/script.js')}}"></script>
         <script type="text/javascript">
-        google.charts.load("current", {packages:["corechart"]});
-        google.charts.setOnLoadCallback(drawChart);
-        function drawChart() {
-            var data = new google.visualization.DataTable() 
-            data.addColumn('string', 'reviews');
-            data.addColumn('number', 'counts');
-            data.addRows([ 
-                ['正面', {{review.positive}}], 
-                ['負面', {{review.negative}}], 
-                ['中立', {{review.neutral}}] 
-            ]); 
-
-            var options = {
-                title: '正負評比例',
-                colors: ['#9DDF9B', '#FDB3B2', '#F7DE8F'],
-                is3D: true,
+            let gk = JSON.parse(document.getElementById('gk').innerHTML);
+            let bk = JSON.parse(document.getElementById('bk').innerHTML);
+            let nk = JSON.parse(document.getElementById('nk').innerHTML);
+            let good_keywords = []
+            let bad_keywords = []
+            let neutral_keywords = []
+            for (const e in gk) {
+                let temp = [e, gk[e]]
+                good_keywords.push(temp)
+            }
+            for (const e in bk) {
+                let temp = [e, bk[e]]
+                bad_keywords.push(temp)
+            }
+            for (const e in nk) {
+                let temp = [e, nk[e]]
+                neutral_keywords.push(temp)
+            }
+            let options = {
+                weightFactor   : 20,
+                rotateRatio    : 0,
+                rotationSteps  : 0,
+                shuffle        : false,
+                backgroundColor: 'white',
+                drawOutOfBound : false,
+                gridSize       : 3
             };
 
+            WordCloud(document.getElementById('gk_canvas'), {list:good_keywords,color:'rgb(90 214 65)',...options});
+            WordCloud(document.getElementById('bk_canvas'), {list:bad_keywords,color:'rgb(255 114 114)',...options});
+            WordCloud(document.getElementById('nk_canvas'), {list:neutral_keywords,color:'rgb(245 206 45)',...options});
+            
+            google.charts.load("current", {packages:["corechart"]});
+            google.charts.setOnLoadCallback(drawChart);
+            function drawChart() {
+                var data = new google.visualization.DataTable() 
+                data.addColumn('string', 'reviews');
+                data.addColumn('number', 'counts');
+                data.addRows([ 
+                    ['正面', {{review.positive}}], 
+                    ['負面', {{review.negative}}], 
+                    ['中立', {{review.neutral}}] 
+                ]); 
 
-            var chart = new google.visualization.PieChart(document.getElementById('3dchart'));
-            chart.draw(data, options);
-        }
+                var options = {
+                    title: '正負評比例',
+                    colors: ['#9DDF9B', '#FDB3B2', '#F7DE8F'],
+                    is3D: true,
+                };
 
-        google.charts.load('current', {'packages':['bar']});
-        google.charts.setOnLoadCallback(drawChart2);
-        let exchangeData = JSON.parse(document.getElementById('exchangeData').innerHTML);
-
-        function drawChart2() {
-        
-        let bar_data = [['評論時間', '好評', '負評', '中立']]
-        
-        exchangeData.forEach(el => {
-            bar_data.push(Object.values(el))
-        });     
-
-        console.log(bar_data)
-
-        var data = google.visualization.arrayToDataTable(bar_data);
-
-        var options = {
-            chart: {
-            title: '各發佈時間區間的評論數量',
-            },
-            isStacked: true,
-            series: {
-                0:{color:'#9DDF9B'},
-                1:{color:'#FDB3B2'},
-                2:{color:'#F7DE8F'}
+                var chart = new google.visualization.PieChart(document.getElementById('3dchart'));
+                chart.draw(data, options);
             }
-        };
+
+            google.charts.load('current', {'packages':['bar']});
+            google.charts.setOnLoadCallback(drawChart2);
+            let cf = JSON.parse(document.getElementById('cf').innerHTML);
+
+            function drawChart2() {
+            
+            let bar_data = [['評論時間', '好評', '負評', '中立']]
+            
+            cf.forEach(el => {
+                bar_data.push(Object.values(el))
+            });     
+
+            var data = google.visualization.arrayToDataTable(bar_data);
+
+            var options = {
+                chart: {
+                title: '各發佈時間區間的評論數量',
+                },
+                isStacked: true,
+                series: {
+                    0:{color:'#9DDF9B'},
+                    1:{color:'#FDB3B2'},
+                    2:{color:'#F7DE8F'}
+                }
+            };
 
         var chart = new google.charts.Bar(document.getElementById('columnchart_material'));
         chart.draw(data, google.charts.Bar.convertOptions(options));

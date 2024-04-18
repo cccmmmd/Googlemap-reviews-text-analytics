@@ -123,7 +123,7 @@ def submit():
     r1.join()
     r2.join()
     finalresult = finalresult1 + finalresult2
-    print(finalresult)
+    # print(finalresult)
   
    
 
@@ -177,9 +177,8 @@ def submit():
                     neutral_keywords[i] = 1
                 else:
                     neutral_keywords[i] += 1
-
-       
-    print(good_keywords, bad_keywords, neutral_keywords)
+    
+    # print(good_keywords, bad_keywords, neutral_keywords)
 
 
     classify = json.dumps(classify)

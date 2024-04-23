@@ -34,7 +34,6 @@ def get_20_reviews(id):
             get_20_reviews(id)
     
     # print(data_words)   
-            
     return data_words1, data_words2
 
 def fetch_name():
@@ -49,8 +48,7 @@ def get_reviews_data(data_array, tkn):
 
     response = requests.get(f"https://www.google.com/async/reviewDialog?hl=zh-TW&async=feature_id:{cid},next_page_token:{tkn},sort_by:newestFirst,start_index:,associated_topic:,_fmt:pc", headers=headers)
 
-    soup = BeautifulSoup(response.content, 'html.parser')
-    soup.encoding = 'utf-8'
+    soup = BeautifulSoup(response.content.decode('utf-8', 'ignore'))
     token = soup.select_one('.gws-localreviews__general-reviews-block')['data-next-page-token']
     name = soup.select_one('.Lhccdd > div:first-of-type ').text
 
